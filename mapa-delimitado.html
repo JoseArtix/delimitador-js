@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mapa con Polígonos Circulares de Búsqueda</title>
+  <!-- Agrega Leaflet y estilos CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #mapid {
+      height: 900px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Crea un contenedor para el mapa y un formulario para ingresar la dirección -->
+<div>
+  <label for="direccion">Ingresa la dirección:</label>
+  <input type="text" id="direccion" value="George, 192, Avenida Presidente Masaryk, Colonia Bosques de Chapultepec, Miguel Hidalgo, Santa Fe, Ciudad de México, 11560, México" placeholder="Ej. Av. Reforma 123, Ciudad de México">
+  <button onclick="buscarDireccion()">Buscar</button>
+</div>
+<div id="mapid"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  function buscarDireccion() {
+    // Obtener la dirección ingresada por el usuario
+    const direccion = document.getElementById('direccion').value;
+    //const direccion = "George, 192, Avenida Presidente Masaryk, Colonia Bosques de Chapultepec, Miguel Hidalgo, Santa Fe, Ciudad de México, 11560, México";
+    // Construir la URL para la geocodificación
+    var nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(direccion)}`;
+
+    // Realizar una solicitud HTTP para obtener las coordenadas
+    // fetch(url)
+    //   .then(response => response.json())
+    //   .then(data => {
+    //     // Verificar si se obtuvo alguna respuesta
+    //     if (data && data.length > 0) {
+    //       // Obtener las coordenadas de la primera coincidencia
+    //       var latitud = data[0].lat;
+    //       var longitud = data[0].lon;
+
+    //       console.log(`Coordenadas: ${latitud}, ${longitud}`);
+
+    //       // Actualizar el mapa con las nuevas coordenadas
+    //       actualizarMapa(latitud, longitud);
+    //     } else {
+    //       console.log("No se encontraron coordenadas para la dirección proporcionada.");
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error("Error al realizar la solicitud de geocodificación:", error);
+    //   });
+
+    // Inicializa un mapa centrado en la ubicación obtenida
+    //const mymap = L.map('mapid').setView([latitud, longitud], 13);
+
+    // Añade una capa de mapa (puedes usar diferentes proveedores)
+    
+
+   
+    fetch(nominatimUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const mymap = L.map('mapid').setView([data[0].lat, data[0].lon], 17);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+        }).addTo(mymap);
+        // Muestra polígonos circulares alrededor de los resultados
+        data.forEach((result) => {
+          const circle = L.circle([result.lat, result.lon], {
+            color: 'blue',
+            fillColor: 'blue',
+            fillOpacity: 0.2,
+            radius:300,  // Ajusta el radio del círculo según tus preferencias
+          }).addTo(mymap);
+        });
+      });
+  }
+
+  buscarDireccion();
+
+//   function actualizarMapa(latitud, longitud) {
+//     // Inicializa un mapa centrado en la ubicación obtenida
+//     const mymap = L.map('mapid').setView([latitud, longitud], 13);
+
+//     // Añade una capa de mapa (puedes usar diferentes proveedores)
+//     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//       attribution: '© OpenStreetMap contributors',
+//     }).addTo(mymap);
+
+//     // Realiza una búsqueda y muestra polígonos circulares alrededor de los resultados
+//     const query = "ciudad de México";
+//     const nominatimUrl = `https://nominatim.openstreetmap.org/search?q=${query}&format=json`;
+
+//     fetch(nominatimUrl)
+//       .then((response) => response.json())
+//       .then((data) => {
+//         console.log(data);
+//         const mymap = L.map('mapid').setView([data[0].lat, data[0].lon], 13);
+//         // Muestra polígonos circulares alrededor de los resultados
+//         data.forEach((result) => {
+//           const circle = L.circle([result.lat, result.lon], {
+//             color: 'blue',
+//             fillColor: 'blue',
+//             fillOpacity: 0.2,
+//             radius: 800,  // Ajusta el radio del círculo según tus preferencias
+//           }).addTo(mymap);
+//         });
+//       });
+//   }
+</script>
+
+</body>
+</html>
